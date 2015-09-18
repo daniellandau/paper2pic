@@ -36,8 +36,6 @@ public class LocationDataManagerListener implements Callable<Void> {
 	 */
 	@Override
 	public Void call() throws Exception {
-		// An Navigation übergeben
-		navigationContext.onNewUserPosition();
 		return null;
 	}
 }

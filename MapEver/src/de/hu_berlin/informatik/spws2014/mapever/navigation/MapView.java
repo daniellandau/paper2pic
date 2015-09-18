@@ -246,51 +246,14 @@ public class MapView extends LargeImageView {
 		// Super-Methode aufrufen (wichtig)
 		super.update();
 		
-		if (isMapLoaded) {
-			// Locationmarker aktualisieren
-			updateLocationIcon();
-		}
 	}
 	
 	@Override
 	public void onTouchPanZoomChange() {
 		// Panning/Zooming wurde durch Touch-Event verändert.
 		
-		// aufhören, den Standort zu fokusieren
-		if (navigation.isPositionTracked()) {
-			navigation.stopTrackingPosition();
-		}
 	}
 	
-	
-	// ////////////////////////////////////////////////////////////////////////
-	// //////////// DARSTELLUNG
-	// ////////////////////////////////////////////////////////////////////////
-	
-	/**
-	 * Aktualisiert die Position des LocationIcons.
-	 */
-	public void updateLocationIcon() {
-		if (locationIcon == null)
-			return;
-		
-		if (navigation.isUserPositionKnown()) {
-			// Wenn die aktuelle Benutzerposition bekannt ist, zeige Position an.
-			// (Extra prüfen, ob es bereits sichtbar ist, bevor wir setVisibility aufrufen, ist etwas unnütz.)
-			locationIcon.show();
-			
-			// Aktuelle Userposition abfragen
-//			Point2D pos = navigation.getUserPosition();
-			
-			// Locationmarker updaten
-//			locationIcon.setPosition(pos);
-		}
-		else {
-			// Locationmarker verstecken, bis wieder neue Koordinaten bekannt sind
-			locationIcon.hide();
-		}
-		
-	}
 	
 	// ////////////////////////////////////////////////////////////////////////
 	// //////////// LADEN/VERWALTUNG VON BILD UND USERPOSITION

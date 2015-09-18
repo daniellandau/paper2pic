@@ -83,15 +83,15 @@ public class Navigation extends BaseActivity implements LocationListener {
 	private MapView mapView;
 	
 	// der Button zum Setzen des Referenzpunkts
-	private ImageButton setRefPointButton;
+//	private ImageButton setRefPointButton;
 	// der Button zum Setzen des Referenzpunkts (Akzeptieren)
-	private ImageButton acceptRefPointButton;
+//	private ImageButton acceptRefPointButton;
 	// der Button zum Setzen des Referenzpunkts (Abbrechen)
-	private ImageButton cancelRefPointButton;
+//	private ImageButton cancelRefPointButton;
 	// der Button zum L�schen eines Referenzpunkts
-	private ImageButton deleteRefPointButton;
+//	private ImageButton deleteRefPointButton;
 	// Button um Position zu verfolgen
-	private ImageButton trackPositionButton;
+//	private ImageButton trackPositionButton;
 	
 	// Liste aller ImageButtons
 	private ArrayList<ImageButton> imageButtonList = new ArrayList<ImageButton>();
@@ -167,24 +167,7 @@ public class Navigation extends BaseActivity implements LocationListener {
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.setFocusable(true);
 		mapView.setFocusableInTouchMode(true);
-		
-		// Initialisieren der Buttons & Eintragen in die Liste
-		setRefPointButton = (ImageButton) findViewById(R.id.set_refpoint);
-		imageButtonList.add(setRefPointButton);
-		
-		acceptRefPointButton = (ImageButton) findViewById(R.id.accept_refpoint);
-		imageButtonList.add(acceptRefPointButton);
-		
-		cancelRefPointButton = (ImageButton) findViewById(R.id.cancel_refpoint);
-		imageButtonList.add(cancelRefPointButton);
-		
-		deleteRefPointButton = (ImageButton) findViewById(R.id.delete_refpoint);
-		imageButtonList.add(deleteRefPointButton);
-		
-		trackPositionButton = (ImageButton) findViewById(R.id.track_position);
-		// Nicht den trackPositionButton in der Liste speichern, da dieser unabh�ngig vom Zustand gezeigt werden soll
-		// imageButtonList.add(trackPositionButton);
-		
+
 		// Im Zweifelsfall kennen wir den Kartennamen nicht (sonst wird der aus der Datenbank geladen)
 		setTitle(getString(R.string.navigation_const_name_of_unnamed_maps));
 		
@@ -246,10 +229,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 		// Initialiales update(), damit alles korrekt dargestellt wird
 		mapView.update();
 		
-		// Aktuelle Position zentrieren, falls tracking aktiviert
-		if (trackPosition) {
-			trackPosition(trackPositionButton);
-		}
 	}
 	
 	@Override
@@ -408,9 +387,8 @@ public class Navigation extends BaseActivity implements LocationListener {
 				return true;
 				
 			case R.id.action_debugmode_mockgps:
-				// DEBUGMODE: Mock GPS coordinates
-				debug_mockGPS();
-				
+				return true;
+
 			default:
 				return super.onOptionsItemSelected(item);
 		}
@@ -573,9 +551,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 		// Zustands�nderung zum "Referenzpunkt Setzen" Zustand
 		changeState(NavigationStates.MARK_REFPOINT);
 		
-		// der bet�tigte Button wird verborgen
-		setRefPointButton.setVisibility(View.INVISIBLE);
-		setRefPointButton.setEnabled(false);
 	}
 	
 	/**
@@ -695,32 +670,17 @@ public class Navigation extends BaseActivity implements LocationListener {
 		// und dann je nach Zustand die passenden Buttons reaktivieren
 		switch (state) {
 			case ACCEPT_REFPOINT:
-				// Buttons zum Akzeptieren und Verwerfen des gesetzten Referenzpunkts m�ssen angezeigt werden
-				acceptRefPointButton.setVisibility(View.VISIBLE);
-				acceptRefPointButton.setEnabled(true);
-				cancelRefPointButton.setVisibility(View.VISIBLE);
-				cancelRefPointButton.setEnabled(true);
 				break;
 			
 			case DELETE_REFPOINT:
-				// Button zum L�schen des Referenzpunkts muss angezeigt werden
-				deleteRefPointButton.setVisibility(View.VISIBLE);
-				deleteRefPointButton.setEnabled(true);
 				break;
 			
 			case HELP_ACCEPT_REFPOINT:
-				// Buttons von Accept_Refpoint einblenden aber nicht aktivieren
-				acceptRefPointButton.setVisibility(View.VISIBLE);
-				cancelRefPointButton.setVisibility(View.VISIBLE);
-				
 				// Es handelt sich um einen Wechsel zur Schnellhilfe
 				changeToHelp = true;
 				break;
 			
 			case HELP_DELETE_REFPOINT:
-				// Buttons von Delete_Refpoint einblenden aber nicht aktivieren
-				deleteRefPointButton.setVisibility(View.VISIBLE);
-				
 				changeToHelp = true;
 				break;
 			
@@ -731,9 +691,7 @@ public class Navigation extends BaseActivity implements LocationListener {
 				break;
 			
 			case HELP_RUNNING:
-				// Buttons von RUNNING einblenden aber nicht aktivieren
-				setRefPointButton.setVisibility(View.VISIBLE);
-				
+
 				changeToHelp = true;
 				break;
 			
@@ -822,15 +780,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 				break;
 			
 			case RUNNING:
-				// Button zum Setzen von Referenzpunkten einblenden
-				setRefPointButton.setVisibility(View.VISIBLE);
-				setRefPointButton.setEnabled(true);
-				
-				if (isUserPositionKnown()) {
-					// track position button anzeigen, ist default ausgeblendet um crashes zu verhinden
-					trackPositionButton.setVisibility(View.VISIBLE);
-				}
-				
 				// nur in RUNNING kann man die Karte umbenennen
 				if (menu != null) {
 					menu.findItem(R.id.action_rename_map).setVisible(true);
@@ -862,25 +811,7 @@ public class Navigation extends BaseActivity implements LocationListener {
 		}
 	}
 	
-	/**
-	 * Deaktiviert den Referenzpunkt-Setzen-Button (d.h. er wird ausgegraut, bleibt aber enabled) oder aktiviert ihn.
-	 * 
-	 * @param disable false zum Reaktivieren des Buttons
-	 */
-	private void disableSetRefPointButton(boolean disable) {
-		if (disable) {
-			// Button "ausgegraut" anzeigen
-			setRefPointButton.setColorFilter(Color.GRAY);
-			setRefPointButton.getBackground().setAlpha(127);
-		}
-		else {
-			// Button aktivieren und ColorFilter entfernen
-			setRefPointButton.clearColorFilter();
-			setRefPointButton.getBackground().setAlpha(255);
-		}
-	}
-	
-	
+
 	// ////////////////////////////////////////////////////////////////////////
 	// //////////// LOKALISIERUNG
 	// ////////////////////////////////////////////////////////////////////////
@@ -905,103 +836,4 @@ public class Navigation extends BaseActivity implements LocationListener {
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		Log.d("Navigation", "Status changed: " + provider + ", status = " + status);
 	}
-	
-	
-	// //////// POSITION TRACKING (AUTO CENTER)
-	
-	public boolean isPositionTracked() {
-		return trackPosition;
-	}
-	
-	public void stopTrackingPosition() {
-		trackPosition = false;
-		trackPositionButton.setVisibility(View.VISIBLE);
-	}
-	
-	
-	// //////// DEBUG MODE - GPS
-	
-	// Simuliert zuf�llige GPS-Koordinaten
-	private void debug_mockGPS() {
-		// TODO eventuell GPS-Provider deaktivieren? mit der Methode, die in onPause verwendet wird
-		
-		Random random = new Random();
-		double mockRadius = 0.1;
-		
-		// mockBaseLocation ist der Punkt, der als Zentrum f�r die zuf�llige Verteilung gew�hlt wird (Startkoordinaten)
-		if (mockBaseLocation == null) {
-			// Verwende folgende Default-Koordinaten, wenn keine Startkoordinaten bekannt (das ist der Fernsehturm :) )
-			mockBaseLocation = new Location("mock");
-			mockBaseLocation.setLatitude(52.520818);
-			mockBaseLocation.setLongitude(13.409403);
-		}
-		
-		Location mockLoc = new Location(mockBaseLocation);
-		double dLat, dLon;
-		String toastText;
-		
-		// Falls wir im Referenzpunkt-Setz-Modus sind, simuliere Hilfspunkte statt zuf�llige!
-		// D.h. je nach Anzahl der Referenzpunkte, biete einen Punkt oben mittig, links unten oder rechts unten an.
-		if (state == NavigationStates.MARK_REFPOINT || state == NavigationStates.ACCEPT_REFPOINT) {
-			switch (mapView.countReferencePoints()) {
-				case 0:
-					dLat = 0.5 * mockRadius;
-					dLon = 0;
-					toastText = "Mitte oben (.5, 0)";
-					break;
-				
-				case 1:
-					dLat = -0.5 * mockRadius;
-					dLon = -0.5 * mockRadius;
-					toastText = "Links unten (-.5, -.5)";
-					break;
-				
-				case 2:
-					dLat = -0.5 * mockRadius;
-					dLon = 0.5 * mockRadius;
-					toastText = "Rechts unten (-.5, .5)";
-					break;
-				
-				default:
-					dLat = dLon = 0;
-					toastText = "Mittelpunkt (0, 0)";
-			}
-		}
-		else {
-			dLat = (random.nextDouble() - 0.5) * 2 * mockRadius;
-			dLon = (random.nextDouble() - 0.5) * 2 * mockRadius;
-			toastText = "dLat " + dLat / mockRadius + "\ndLon " + dLon / mockRadius + "\n(relative to mock radius)";
-		}
-		
-		mockLoc.setLatitude(mockLoc.getLatitude() + dLat);
-		mockLoc.setLongitude(mockLoc.getLongitude() + dLon);
-		
-		// Koordinaten einspei�en
-		Log.d("debug_mockGPS", "Set GPS coordinates to dLat = " + dLat + ", dLon = " + dLon + " (relative to starting point)");
-		onLocationChanged(mockLoc);
-		
-		// Koordinatendifferenz in Toast anzeigen
-		if (mockStatusToast != null) {
-			mockStatusToast.cancel();
-		}
-		mockStatusToast = Toast.makeText(this, toastText, Toast.LENGTH_SHORT);
-		mockStatusToast.show();
-	}
-	
-	
-	// //////// BILD-LOKALISIERUNG
-	
-	/**
-	 * Wird vom LocationDataManagerListener beim Erhalten neuer Userposition aufgerufen.
-	 */
-	public void onNewUserPosition() {}
-	
-
-	/**
-	 * Gibt true zur�ck, wenn die aktuelle Benutzerposition bekannt ist, sonst false.
-	 */
-	public boolean isUserPositionKnown() {
-        return false;
-	}
-	
 }
