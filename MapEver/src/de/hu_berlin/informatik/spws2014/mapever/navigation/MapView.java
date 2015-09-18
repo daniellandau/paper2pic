@@ -151,7 +151,7 @@ public class MapView extends LargeImageView {
 			}
 			
 			if (toDeleteRefPointIcon == null) {
-				Log.w("MapView/onRestoreInstanceState", "Tried to restore delete candidate but didn't find it: " + deleteCandidatePos);
+//				Log.w("MapView/onRestoreInstanceState", "Tried to restore delete candidate but didn't find it: " + deleteCandidatePos);
 			}
 		}
 		
@@ -280,10 +280,10 @@ public class MapView extends LargeImageView {
 			locationIcon.show();
 			
 			// Aktuelle Userposition abfragen
-			Point2D pos = navigation.getUserPosition();
+//			Point2D pos = navigation.getUserPosition();
 			
 			// Locationmarker updaten
-			locationIcon.setPosition(pos);
+//			locationIcon.setPosition(pos);
 		}
 		else {
 			// Locationmarker verstecken, bis wieder neue Koordinaten bekannt sind
@@ -348,11 +348,6 @@ public class MapView extends LargeImageView {
 	 * Zentriert die Ansicht auf die aktuelle Benutzerposition.
 	 */
 	public void centerCurrentLocation() {
-		// Benutzerposition abfragen
-		Point2D location = navigation.getUserPosition();
-		
-		// Pan-Zentrum auf die Position verschieben (ruft update() auf).
-		setPanCenter(location.x, location.y);
 	}
 	
 	
@@ -434,9 +429,8 @@ public class MapView extends LargeImageView {
 		unacceptedRefPointIcon.setTimestamp(SystemClock.elapsedRealtime());
 		
 		// Referenzpunkt bei Lokalisierung eintragen
-		boolean registerSuccessful = navigation.registerReferencePoint(unacceptedRefPointIcon.getPosition(),
-				unacceptedRefPointIcon.getTimestamp());
-		
+        boolean registerSuccessful = false;
+
 		if (registerSuccessful) {
 			// Füge Referenzpunkt in Liste ein
 			refPointIcons.add(unacceptedRefPointIcon);
@@ -447,8 +441,8 @@ public class MapView extends LargeImageView {
 		else {
 			// Referenzpunkt konnte nicht registriert werden -> ungültige/unsinnige Koordinaten?
 			// Fehlermeldung anzeigen und Referenzpunkt löschen.
-			Log.w("MapView/acceptReferencePoint", "addMarker for point " + unacceptedRefPointIcon.getPosition()
-					+ " at time " + unacceptedRefPointIcon.getTimestamp() + " returned false");
+//			Log.w("MapView/acceptReferencePoint", "addMarker for point " + unacceptedRefPointIcon.getPosition()
+//					+ " at time " + unacceptedRefPointIcon.getTimestamp() + " returned false");
 			Toast.makeText(getContext(), getContext().getString(R.string.navigation_toast_refpoint_already_set_for_this_position), Toast.LENGTH_SHORT).show();
 			
 			// unakzeptierten Punkt verwerfen
@@ -516,7 +510,7 @@ public class MapView extends LargeImageView {
 			return;
 		
 		// Referenzpunkt aus der Lokalisierung löschen.
-		navigation.unregisterReferencePoint(toDeleteRefPointIcon.getPosition());
+//		navigation.unregisterReferencePoint(toDeleteRefPointIcon.getPosition());
 		
 		// Entferne Referenzpunkt aus der Liste und von der Darstellung
 		refPointIcons.remove(toDeleteRefPointIcon);

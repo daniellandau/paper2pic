@@ -27,7 +27,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -40,36 +39,19 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.TriangleImagePositionLocator;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.GpsPoint;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.ILDMIOHandler;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.ImagePositionLocator;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.IPLSettingsContainer;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.LDMIOEmpty;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.LeastSquaresImagePositionLocator;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.LocationDataManager;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.Marker;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.NoGpsDataAvailableException;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.Point2D;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.PointNotInImageBoundsException;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.TrackDB;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.TrackDBEntry;
 import de.hu_berlin.informatik.spws2014.mapever.BaseActivity;
 import de.hu_berlin.informatik.spws2014.mapever.MapEverApp;
 import de.hu_berlin.informatik.spws2014.mapever.R;
 import de.hu_berlin.informatik.spws2014.mapever.Start;
-import de.hu_berlin.informatik.spws2014.mapever.Thumbnail;
 
 public class Navigation extends BaseActivity implements LocationListener {
 	
 	// ////// KEYS F�R ZU SPEICHERNDE DATEN IM SAVEDINSTANCESTATE-BUNDLE
-	
+
 	// Key f�r ID der geladenen Karte (long)
 	private static final String SAVEDCURRENTMAPID = "savedCurrentMapID";
 	
@@ -121,7 +103,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 	private long currentMapID;
 	
 	// Position des Benutzers auf der Karte in Pixeln
-	private Point2D userPosition = null;
 	private double[] intentPos = null;
 	
 	// Soll die aktuelle Position verfolgt (= zentriert) werden?
@@ -134,8 +115,7 @@ public class Navigation extends BaseActivity implements LocationListener {
 	private LocationManager locationManager;
 	
 	// Lokalisierungsalgorithmus
-	private LocationDataManager locationDataManager;
-	
+
 	// LocationDataManagerListener, der das Eintreffen neuer Positionen handled
 	private LocationDataManagerListener locDatManListener;
 	
@@ -163,10 +143,7 @@ public class Navigation extends BaseActivity implements LocationListener {
 	// unser Men�
 	private Menu menu;
 	
-	// die Anbindung an die Datenbank
-	private ILDMIOHandler iLDMIOHandler;
-	TrackDBEntry thisMap;
-	
+
 	// ////////////////////////////////////////////////////////////////////////
 	// //////////// ACTIVITY LIFECYCLE UND INITIALISIERUNG
 	// ////////////////////////////////////////////////////////////////////////
@@ -226,9 +203,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 			changeState(NavigationStates.RUNNING);
 			saveState = true;
 			
-			// aktuelle Position des Nutzers auf der Karte, null: noch nicht bekannt
-			userPosition = null;
-			
 			intentPos = intent.getDoubleArrayExtra(INTENT_POS);
 		}
 		else {
@@ -236,9 +210,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 			
 			// ID der Karte (= Dateiname des Bildes)
 			currentMapID = savedInstanceState.getLong(SAVEDCURRENTMAPID);
-			
-			// aktuelle Position des Nutzers auf der Karte
-			userPosition = (Point2D) savedInstanceState.getSerializable(SAVEDUSERPOS);
 			
 			// ist das Kurztutorial aktiviert?
 			quickTutorial = savedInstanceState.getBoolean(SAVEDHELPSTATE);
@@ -275,14 +246,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 		// Initialiales update(), damit alles korrekt dargestellt wird
 		mapView.update();
 		
-		if (intentPos != null) {
-			boolean prev = locationDataManager.setSpeedFiltering(false);
-			locationDataManager.addPoint(new GpsPoint(intentPos[1], intentPos[0], SystemClock.elapsedRealtime()));
-			locationDataManager.setSpeedFiltering(prev);
-
-			// Change mode to set ref point
-			changeState(NavigationStates.MARK_REFPOINT);
-		}
 		// Aktuelle Position zentrieren, falls tracking aktiviert
 		if (trackPosition) {
 			trackPosition(trackPositionButton);
@@ -294,12 +257,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 		super.onDestroy();
 		Log.d("Navigation", "onDestroy...");
 		
-		// Stelle NOCH MAL sicher, dass LDM-IO-Handler letzte Daten geschrieben hat.
-		// Passiert eigentlich schon in onResume(), aber um auf Nummer sicher zu gehen...
-		// TODO hier vielleicht mit resetIOHandler(null)? @diedricm ?
-		if (locationDataManager != null) {
-			iLDMIOHandler.save();
-		}
 	}
 	
 	@Override
@@ -351,13 +308,7 @@ public class Navigation extends BaseActivity implements LocationListener {
 		
 		// Deabonniere GPS Updates
 		locationManager.removeUpdates(this);
-		
-		// Stelle sicher, dass LDM-IO-Handler letzte Daten geschrieben hat
-		if (locationDataManager != null) {
-			Log.d("onPause", "Schreibe letzte LDM-IO-Daten...");
-			iLDMIOHandler.save();
-		}
-	}
+    }
 	
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -368,10 +319,7 @@ public class Navigation extends BaseActivity implements LocationListener {
 			
 			// ID der Karte (= Dateiname des Bildes)
 			savedInstanceState.putLong(SAVEDCURRENTMAPID, currentMapID);
-			
-			// aktuelle Position des Nutzers auf der Karte als Point2D
-			savedInstanceState.putSerializable(SAVEDUSERPOS, userPosition);
-			
+
 			// Zustand der Navigation speichern
 			savedInstanceState.putInt(SAVEDSTATE, state.ordinal());
 			
@@ -467,15 +415,7 @@ public class Navigation extends BaseActivity implements LocationListener {
 				return super.onOptionsItemSelected(item);
 		}
 	}
-	
-	/**
-	 * Gibt eine Referenz auf unser MapView zur�ck.
-	 */
-	public MapView getMapView() {
-		return mapView;
-	}
-	
-	
+
 	// ////////////////////////////////////////////////////////////////////////
 	// //////////// INITIALISIERUNG VON KARTE UND GPS-MODUL
 	// ////////////////////////////////////////////////////////////////////////
@@ -489,65 +429,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 		// ////// LDM-IO-HANDLER INITIALISIEREN
 		
 		Log.i("Nav" ,"currentMapID:" + currentMapID);
-		
-		if (currentMapID == LOAD_TEST_MAP) {
-			// Spezialfall 0: Lade Testkarte
-			// => Lade nichts aus der Datenbank, sondern benutze nichtpersistenten LDM. (Debugging)
-			iLDMIOHandler = new LDMIOEmpty();
-		} else {
-			if (!TrackDB.loadDB(new File(MapEverApp.getAbsoluteFilePath("")))) {
-				Log.e("Nav", "Could not load DB");
-				finish();
-			}
-			
-			// Haben wir eine neue Karte erstellt?
-			if (currentMapID != CREATE_NEW_MAP) {
-				// Lade Karte mit der gegebenen ID aus der Datenbank
-				// Falls ID = -1, wird ein neuer Eintrag f�r eine neue Karte erstellt (ID per auto increment)
-				// pr�fen, ob Karte mit der ID existiert, sonst Fehlermeldung
-				thisMap = TrackDB.main.getMap(currentMapID);
-				currentMapID = thisMap.getIdentifier();
-			} else {
-				// ID der neuen Karte anfragen und merken
-				thisMap = TrackDB.main.createMap();
-				currentMapID = thisMap.getIdentifier();
-				
-				Log.d("Navigation/initLoadMap", "Neu erstellte Karte mit ID: " + thisMap.getIdentifier());
-				
-				String targetFilename = MapEverApp.getAbsoluteFilePath(String.valueOf(thisMap.getIdentifier()));
-				String targetFilenameThumb = targetFilename + MapEverApp.THUMB_EXT;
-				
-				// Bilddatei umbenennen
-				File renameFrom = new File(MapEverApp.getAbsoluteFilePath(MapEverApp.TEMP_IMAGE_FILENAME));
-				File renameTo = new File(targetFilename);
-				renameFrom.renameTo(renameTo);
-				
-				// Thumbnail erstellen
-				try {
-					int thumbSize = Start.getThumbnailSize();
-					Thumbnail.generate(targetFilename, targetFilenameThumb, thumbSize, thumbSize);
-				} catch (IOException e) {
-					Log.e("Navigation/initLoadMap", "Failed generating thumbnail for image '" + targetFilename + "'!");
-					e.printStackTrace();
-				}
-			}
-			
-			try {
-				iLDMIOHandler = TrackDB.main.getLDMIO(thisMap);
-			} catch (IOException e) {
-				// ResourceID der Fehlermeldung an den Startbildschirm geben, dieser zeigt Fehlermeldung an
-				setResult(R.string.navigation_map_not_found);
-				finish();
-				return;
-			}
-			
-			// wenn ein sinnvoller name vorhanden ist -> diesen anzeigen, sonst default Wert
-			if (thisMap.getMapname().isEmpty())
-				setTitle(R.string.navigation_const_name_of_unnamed_maps);
-			else
-				setTitle(thisMap.getMapname());
-		}
-		
 		// ////// BILD IN DIE MAPVIEW LADEN
 		
 		// (bei currentMapID == 0 wird die Testkarte geladen)
@@ -577,33 +458,11 @@ public class Navigation extends BaseActivity implements LocationListener {
 		// Listener f�r neue Userkoordinaten erstellen
 		locDatManListener = new LocationDataManagerListener(this);
 		
-		// LocationDataManager initialisieren
-		Point2D imageSize = new Point2D(mapView.getImageWidth(), mapView.getImageHeight());
-		ImagePositionLocator locator;
-		if (de.hu_berlin.informatik.spws2014.mapever.Settings.getPreference_leastsquares(this)) {
-			locator = new LeastSquaresImagePositionLocator();
-		} else {
-			locator = new TriangleImagePositionLocator(imageSize, IPLSettingsContainer.DefaultContainer);
-		}
-		locationDataManager = new LocationDataManager(locDatManListener, iLDMIOHandler,
-				imageSize,
-				locator);
-		locationDataManager.refreshLastPosition();
-		
+
 		// ////// GELADENE REFERENZPUNKTE DARSTELLEN
-		
-		ArrayList<Marker> loadedMarkers = iLDMIOHandler.getAllMarkers();
-		
+
 		// TODO Check for corrupted maps! (LDM returns lots of nulls)
 		
-		if (loadedMarkers != null) {
-			Log.d("Navigation/initLoadMap", "Lade " + loadedMarkers.size() + " Referenzpunkte...");
-			
-			// Erstelle alle geladenen Referenzpunkte
-			for (Marker marker : loadedMarkers) {
-				mapView.createLoadedReferencePoint(marker.imgpoint, marker.time);
-			}
-		}
 	}
 	
 	
@@ -711,13 +570,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 			Log.w("setRefPoint", "Inkonsistenter Zustand: state != RUNNING");
 		}
 		
-		// Pr�fe, ob wir momentan einen Referenzpunkt setzen d�rfen (sind bereits GPS-Koordinaten bekannt?)
-		if (!locationDataManager.isMarkerPlacingAllowed()) {
-			// Zeige Nachricht an, dass auf GPS Ortung gewartet werden muss
-			Toast.makeText(this, getString(R.string.navigation_toast_no_gpsfix_yet), Toast.LENGTH_SHORT).show();
-			return;
-		}
-		
 		// Zustands�nderung zum "Referenzpunkt Setzen" Zustand
 		changeState(NavigationStates.MARK_REFPOINT);
 		
@@ -817,8 +669,7 @@ public class Navigation extends BaseActivity implements LocationListener {
 			// wenn ein neuer Name eingegeben wurde, so ist er in newMapName gespeichert
 			if (newMapName != "") {
 				this.getSupportActionBar().setTitle(newMapName);
-				thisMap.setMapname(newMapName);
-				
+
 				newMapName = "";
 			}
 			
@@ -975,15 +826,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 				setRefPointButton.setVisibility(View.VISIBLE);
 				setRefPointButton.setEnabled(true);
 				
-				// Wenn wir keine aktuelle GPS Position haben, Button "ausgegraut" anzeigen und deaktivieren
-				if (locationDataManager == null || !locationDataManager.isMarkerPlacingAllowed()) {
-					disableSetRefPointButton(true);
-				}
-				else {
-					// ansonsten Button wieder aktivieren
-					disableSetRefPointButton(false);
-				}
-				
 				if (isUserPositionKnown()) {
 					// track position button anzeigen, ist default ausgeblendet um crashes zu verhinden
 					trackPositionButton.setVisibility(View.VISIBLE);
@@ -1046,35 +888,7 @@ public class Navigation extends BaseActivity implements LocationListener {
 	// //////// GPS
 	
 	@Override
-	public void onLocationChanged(Location location) {
-		if (location == null || locationDataManager == null || intentPos != null)
-			return;
-		
-		// Wenn wir in RUNNING sind und wir bisher keine aktuellen Koordinaten hatten, m�ssen wir den (ausgegrauten)
-		// Referenzpunkt-Setzen-Button reaktivieren.
-		if (state == NavigationStates.RUNNING && !locationDataManager.isMarkerPlacingAllowed()) {
-			disableSetRefPointButton(false);
-		}
-		
-		// DEBUG: GPS-Mocker: zuf�llige Koordinaten sollen um Startposition herum gestreut werden
-		if (mockBaseLocation == null) {
-			mockBaseLocation = location;
-		}
-		
-		// Ermittle Koordinatenkomponenten
-		double lng = location.getLongitude();
-		double lat = location.getLatitude();
-		
-		Log.d("Navigation", "GPS location changed: " + lat + "� N / " + lng + "� E");
-		
-		// �bergebe der Lokalisierung den aktuellen GPS-Punkt
-		GpsPoint gpsPoint = new GpsPoint(lng, lat, SystemClock.elapsedRealtime());
-		
-		locationDataManager.addPoint(gpsPoint);
-		
-		// Der LocationDataManagerListener wird spaeter onNewUserPosition()
-		// aufrufen, was das LocationView entsprechend verschiebt.
-	}
+	public void onLocationChanged(Location location) {}
 	
 	// TODO bin mir nicht sicher, ob hier was gemacht werden muss...
 	@Override
@@ -1180,118 +994,14 @@ public class Navigation extends BaseActivity implements LocationListener {
 	/**
 	 * Wird vom LocationDataManagerListener beim Erhalten neuer Userposition aufgerufen.
 	 */
-	public void onNewUserPosition() {
-		// Aktuellste Position vom LocationDataManager holen und setzen
-		Point2D userPosition = locationDataManager.getLastImagePoint();
-		
-		if (userPosition == null || (userPosition.x == 0 && userPosition.y == 0)) {
-			// Sollte eigentlich nicht mehr auftreten... wenn doch, return.
-			Log.w("onNewUserPosition", "getLastImagePoint() returned " + (userPosition == null ? "null" : "(0,0"));
-			return;
-		}
-		
-		Log.d("Navigation", "Image position changed: " + userPosition.x + "px / " + userPosition.y + "px");
-		
-		// Verschiebe den LocationView-Marker
-		setUserPosition(userPosition);
-	}
+	public void onNewUserPosition() {}
 	
-	/**
-	 * Position des Users gemessen in Pixeln relativ zum Bild setzen.
-	 * Aktualisiert die Darstellung der LocationView.
-	 * 
-	 * @param newPos Koordinaten als Point2D
-	 */
-	public void setUserPosition(Point2D newPos) {
-		userPosition = newPos;
-		
-		// Locationmarker aktualisieren
-		mapView.updateLocationIcon();
-		
-		// Aktuelle Position zentrieren, falls tracking aktiviert
-		if (isPositionTracked()) {
-			mapView.centerCurrentLocation();
-		}
-	}
-	
-	/**
-	 * Position des Users gemessen in Pixeln relativ zum Bild als Point2D.
-	 */
-	public Point2D getUserPosition() {
-		return userPosition;
-	}
-	
+
 	/**
 	 * Gibt true zur�ck, wenn die aktuelle Benutzerposition bekannt ist, sonst false.
 	 */
 	public boolean isUserPositionKnown() {
-		return userPosition != null;
-	}
-	
-	/**
-	 * Tr�gt einen neuen Referenzpunkt an der �bergebenen Position und mit dem
-	 * �bergebenen timestamp beim LocationDataManager ein
-	 * 
-	 * @param position
-	 * @param timestamp
-	 */
-	public boolean registerReferencePoint(Point2D position, long timestamp) {
-		Log.d("registerReferencePoint", "Position: " + position + ", time: " + timestamp);
-		
-		try {
-			locationDataManager.addMarker(position, timestamp);
-		}
-		catch (NoGpsDataAvailableException e) {
-			// Keine (neuen) GPS-Daten sind verf�gbar -> f�r diese GPS-Koordinaten existiert bereits ein Referenzpunkt
-			Log.w("registerReferencePoint", "addMarker failed because of NoGpsDataAvailableException: " + e.getMessage());
-			
-			// Fehlermeldung per Toast anzeigen
-			int errorMsgID = e.getMessage() == "Point already known!"
-					? R.string.navigation_toast_refpoint_already_set_for_this_position
-					: R.string.navigation_toast_no_gpsfix_yet;
-			
-			Toast.makeText(this, getString(errorMsgID), Toast.LENGTH_SHORT).show();
-			
-			// aufrufende Funktion muss z.B. den unakzeptierten Referenzpunkt aufr�umen
-			return false;
-		}
-		catch (PointNotInImageBoundsException e) {
-			// Gew�nschter Referenzpunkt befindet sich au�erhalb der Bildgrenzen! (nicht m�glich)
-			Log.w("registerReferencePoint", "addMarker failed because of PointNotInImageBoundsException: " + e.getMessage());
-			
-			// Fehlermeldung per Toast anzeigen
-			Toast.makeText(this, getString(R.string.navigation_toast_refpoint_out_of_boundaries), Toast.LENGTH_SHORT).show();
-			
-			// aufrufende Funktion muss z.B. den unakzeptierten Referenzpunkt aufr�umen
-			return false;
-		}
-
-		// Wieviele Referenzpunkte muss der Nutzer noch setzen?
-		int refPointsLeftToSet = locationDataManager.remainingUserMarkerInputs();
-		
-		// Wenn der Nutzer noch nicht genug Referenzpunkte gesetzt hat, wird er darauf hingewiesen
-		if (refPointsLeftToSet > 0) {
-			Toast.makeText(this, 
-					getString(R.string.navigation_toast_set_refpoint_prompt, refPointsLeftToSet),
-					Toast.LENGTH_SHORT
-			).show();
-		}
-		
-		return true;
-	}
-	
-	/**
-	 * Weist den LocationDataManager an, einen Referenzpunkt zu l�schen.
-	 * 
-	 * @param position
-	 */
-	public boolean unregisterReferencePoint(Point2D position) {
-		Log.d("unregisterReferencePoint", "Position: " + position);
-		
-		boolean result = iLDMIOHandler.removeMarker(position); 
-		locationDataManager.refreshLastPosition();
-		
-		return result;
+        return false;
 	}
 	
 }
