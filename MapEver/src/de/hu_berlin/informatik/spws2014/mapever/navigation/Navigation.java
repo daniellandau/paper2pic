@@ -82,21 +82,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 	// unsere Karte
 	private MapView mapView;
 	
-	// der Button zum Setzen des Referenzpunkts
-//	private ImageButton setRefPointButton;
-	// der Button zum Setzen des Referenzpunkts (Akzeptieren)
-//	private ImageButton acceptRefPointButton;
-	// der Button zum Setzen des Referenzpunkts (Abbrechen)
-//	private ImageButton cancelRefPointButton;
-	// der Button zum L�schen eines Referenzpunkts
-//	private ImageButton deleteRefPointButton;
-	// Button um Position zu verfolgen
-//	private ImageButton trackPositionButton;
-	
-	// Liste aller ImageButtons
-	private ArrayList<ImageButton> imageButtonList = new ArrayList<ImageButton>();
-	
-	
 	// ////// KARTEN- UND NAVIGATIONSINFORMATIONEN
 	
 	// ID der aktuell geladenen Karte (zugleich Dateiname des Kartenbildes)
@@ -118,10 +103,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 
 	// LocationDataManagerListener, der das Eintreffen neuer Positionen handled
 	private LocationDataManagerListener locDatManListener;
-	
-	// Debug-GPS-Mocker
-	private Toast mockStatusToast = null;
-	private Location mockBaseLocation = null;
 	
 	// Umbenennen der Karte
 	private String newMapName = "";
@@ -648,12 +629,6 @@ public class Navigation extends BaseActivity implements LocationListener {
 				newMapName = "";
 			}
 			
-		}
-		
-		// erst mal alle Buttons deaktivieren
-		for (ImageButton imageButton : imageButtonList) {
-			imageButton.setEnabled(false);
-			imageButton.setVisibility(View.INVISIBLE);
 		}
 		
 		// alle Layer bis auf den untersten aus dem FrameLayout entfernen

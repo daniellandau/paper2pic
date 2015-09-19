@@ -1,8 +1,15 @@
 apply plugin: 'com.android.application'
 
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
 dependencies {
     compile project(':OpenCV-2.4.9-android-sdk:sdk:java')
     compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.getbase:floatingactionbutton:1.10.0'
 }
 
 android {

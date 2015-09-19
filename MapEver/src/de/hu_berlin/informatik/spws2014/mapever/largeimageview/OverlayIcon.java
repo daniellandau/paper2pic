@@ -22,7 +22,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
 public abstract class OverlayIcon {
-	
+
+    public OverlayIcon() {}
 	// LargeImageView, an die das Overlay gebunden ist
 	private LargeImageView parentLIV;
 	

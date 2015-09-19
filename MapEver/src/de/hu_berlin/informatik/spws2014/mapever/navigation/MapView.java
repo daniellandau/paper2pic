@@ -30,7 +30,6 @@ import android.widget.Toast;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.Point2D;
 import de.hu_berlin.informatik.spws2014.mapever.MapEverApp;
 import de.hu_berlin.informatik.spws2014.mapever.R;
 import de.hu_berlin.informatik.spws2014.mapever.largeimageview.LargeImageView;
@@ -114,12 +113,12 @@ public class MapView extends LargeImageView {
 		
 		// Falls ein neuer Referenzpunkt erstellt werden sollte, speichere seine Position (als Point2D).
 		// (Timestamp nicht, der ist sowieso 0, solange der Punkt noch nicht akzeptiert wurde.)
-		bundle.putSerializable(SAVEDUNACCEPTEDPOS,
-				unacceptedRefPointIcon != null ? unacceptedRefPointIcon.getPosition() : null);
+//		bundle.putSerializable(SAVEDUNACCEPTEDPOS,
+//				unacceptedRefPointIcon != null ? unacceptedRefPointIcon.getPosition() : null);
 		
 		// Falls ein Referenzpunkt gelöscht werden sollte, speichere seine Position (als Point2D).
-		bundle.putSerializable(SAVEDTODELETEPOS,
-				toDeleteRefPointIcon != null ? toDeleteRefPointIcon.getPosition() : null);
+//		bundle.putSerializable(SAVEDTODELETEPOS,
+//				toDeleteRefPointIcon != null ? toDeleteRefPointIcon.getPosition() : null);
 		
 		return bundle;
 	}
@@ -129,31 +128,31 @@ public class MapView extends LargeImageView {
 		Bundle bundle = (Bundle) state;
 		
 		// Falls ein neuer Referenzpunkt erstellt werden sollte, stelle diesen wieder her.
-		Point2D unacceptedPos = (Point2D) bundle.getSerializable(SAVEDUNACCEPTEDPOS);
+//		Point2D unacceptedPos = (Point2D) bundle.getSerializable(SAVEDUNACCEPTEDPOS);
 		
-		if (unacceptedPos != null) {
-			// Referenzpunkt erstellen
-			unacceptedRefPointIcon = null;
-			createUnacceptedReferencePoint(unacceptedPos);
-		}
+//		if (unacceptedPos != null) {
+//			// Referenzpunkt erstellen
+//			unacceptedRefPointIcon = null;
+//			createUnacceptedReferencePoint(unacceptedPos);
+//		}
 		
 		// Falls ein Referenzpunkt gelöscht werden sollte, stelle die Auswahl wieder her.
-		Point2D deleteCandidatePos = (Point2D) bundle.getSerializable(SAVEDTODELETEPOS);
+//		Point2D deleteCandidatePos = (Point2D) bundle.getSerializable(SAVEDTODELETEPOS);
 		
-		if (deleteCandidatePos != null) {
-			// Finde den zu löschenden Referenzpunkt
-			for (ReferencePointIcon refPoint : refPointIcons) {
-				if (refPoint.getPosition().equals(deleteCandidatePos)) {
-					// dieser Punkt war der Löschkandidat
-					registerAsDeletionCandidate(refPoint);
-					break;
-				}
-			}
-			
-			if (toDeleteRefPointIcon == null) {
-//				Log.w("MapView/onRestoreInstanceState", "Tried to restore delete candidate but didn't find it: " + deleteCandidatePos);
-			}
-		}
+//		if (deleteCandidatePos != null) {
+//			// Finde den zu löschenden Referenzpunkt
+//			for (ReferencePointIcon refPoint : refPointIcons) {
+//				if (refPoint.getPosition().equals(deleteCandidatePos)) {
+//					// dieser Punkt war der Löschkandidat
+//					registerAsDeletionCandidate(refPoint);
+//					break;
+//				}
+//			}
+//
+//			if (toDeleteRefPointIcon == null) {
+////				Log.w("MapView/onRestoreInstanceState", "Tried to restore delete candidate but didn't find it: " + deleteCandidatePos);
+//			}
+//		}
 		
 		// Im Bundle stecken noch Informationen von LargeImageView, z.B. Pan-Daten. Reiche das Bundle also weiter.
 		super.onRestoreInstanceState(bundle);
@@ -230,7 +229,7 @@ public class MapView extends LargeImageView {
 		
 		// Erstelle neuen unakzeptierten Referenzpunkt an dieser Stelle
 		// (Sanitycheck der Koordinaten passiert dort)
-		createUnacceptedReferencePoint(new Point2D(xCoord, yCoord));
+//		createUnacceptedReferencePoint(new Point2D(xCoord, yCoord));
 		
 		// Falls unakzeptierter Referenzpunkt erfolgreich gesetzt wurde, wechsel Zustand
 		if (unacceptedRefPointIcon != null) {
@@ -326,59 +325,8 @@ public class MapView extends LargeImageView {
 	public int countReferencePoints() {
 		return refPointIcons.size();
 	}
-	
-	/**
-	 * Erstellt ein ReferencePointIcon zu einem geladenen Referenzpunkt.
-	 * 
-	 * @param pos Position des Referenzpunktes als Point2D
-	 * @param time Zeitstempel des Punktes
-	 */
-	public void createLoadedReferencePoint(Point2D pos, long time) {
-		// Erstelle Referenzpunkt-Icon (repräsentiert zugleich den Referenzpunkt selbst)
-		ReferencePointIcon newRefPointIcon = new ReferencePointIcon(this, pos, time, true);
-		
-		// Füge Referenzpunkt in Liste ein
-		refPointIcons.add(newRefPointIcon);
-		
-		// Wir registrieren den Punkt NICHT beim LDM, weil wir davon ausgehen, dass wir
-		// ihn von dort bekommen haben...
-		
-		// Darstellung aktualisieren
-		update();
-	}
-	
-	
+
 	// ////// ERSTELLEN / AKZEPTIEREN
-	
-	/**
-	 * Erstellt einen neuen unakzeptierten Referenzpunkt an der angegebenen Bildposition.
-	 * 
-	 * @param pos Position des Referenzpunktes im Bild als Point2D
-	 */
-	public void createUnacceptedReferencePoint(Point2D pos) {
-		// Prüfe die Position auf Sinnhaftigkeit (vermeide Referenzpunkte außerhalb der Bildgrenzen)
-		if (pos.x < 0 || pos.y < 0 || pos.x >= getImageWidth() || pos.y >= getImageHeight()) {
-			// Fehlermeldung als Toast ausgeben
-			Toast.makeText(getContext(),
-					getContext().getString(R.string.navigation_toast_refpoint_out_of_boundaries),
-					Toast.LENGTH_SHORT).show();
-			
-			return;
-		}
-		
-		// Falls der Nutzer bereits vorher einen Referenzpunkt gesetzt und noch nicht bestätigt hat...
-		if (unacceptedRefPointIcon != null) {
-			// -> ... cancelt das Setzen eines neuen Referenzpunkts den alten Punkt.
-			cancelReferencePoint();
-		}
-		
-		// Erstelle Referenzpunkt-Icon (repräsentiert zugleich den Referenzpunkt selbst)
-		// (Wir übergeben 0 als Zeit, weil der Timestamp erst beim Akzeptieren feststeht.)
-		unacceptedRefPointIcon = new ReferencePointIcon(this, pos, 0, false);
-		
-		// Darstellung aktualisieren
-		update();
-	}
 	
 	/**
 	 * Der noch unbestätigte Referenzpunkt unacceptedRefPointIcon wurde von der GUI bestätigt.

@@ -18,13 +18,12 @@ package de.hu_berlin.informatik.spws2014.mapever.navigation;
 
 import android.graphics.Rect;
 
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.Point2D;
 import de.hu_berlin.informatik.spws2014.mapever.R;
 import de.hu_berlin.informatik.spws2014.mapever.largeimageview.LargeImageView;
 import de.hu_berlin.informatik.spws2014.mapever.largeimageview.OverlayIcon;
 
 public class ReferencePointIcon extends OverlayIcon {
-	
+
 	// Resource des zu verwendenden Bildes
 	private static int refPointImageResource = R.drawable.ref_punkt;
 	
@@ -34,9 +33,6 @@ public class ReferencePointIcon extends OverlayIcon {
 	private static long fadingTimeIn = 200;
 	
 	
-	// Bildkoordinaten des Referenzpunktes
-	private Point2D refPointPosition;
-	
 	// Zeitpunkt, zu dem der Referenzpunkt erstellt wurde
 	private long timeStamp = 0;
 	
@@ -44,51 +40,20 @@ public class ReferencePointIcon extends OverlayIcon {
 	// ////////////////////////////////////////////////////////////////////////
 	// //////////// CONSTRUCTORS
 	// ////////////////////////////////////////////////////////////////////////
-	
-	/**
-	 * Erstelle Referenzpunkt an bestimmter Position. Verwende isFadedOut=false für neue Punkte, und true für das Laden
-	 * bestehender Punkte. Bitte darauf achten, time nur dann zu setzen, wenn der Punkt akzeptiert wurde (ggf. später
-	 * mit setTimestamp()).
-	 * 
-	 * @param parentMapView die MapView
-	 * @param position Bildkoordinaten des Punktes
-	 * @param time Zeitpunkt der Erstellung des Punktes
-	 * @param isFadedOut Punkt ist bereits transparent
-	 */
-	public ReferencePointIcon(MapView parentMapView, Point2D position, long time, boolean isFadedOut) {
-		// Superkonstruktor, registriert Icon bei der LIV
-		super((LargeImageView) parentMapView);
-		
-		// Appresource als Bild setzen
-		setDrawable(parentMapView.getResources().getDrawable(refPointImageResource));
-		
-		// Setze Position
-		setPosition(position);
-		setTimestamp(time);
-		
-		// Soll der Punkt zu Beginn voll sichtbar oder transparent sein?
-		if (isFadedOut) {
-			// Alpha-Wert setzen um Punkt transparent zu machen.
-			// (NICHT setAlpha() verwenden, da die Animationen nicht mit dem dadurch gesetzten Alpha-Wert sondern
-			// mit irgendeinem anderen internen Wert arbeiten. Beides wird dann akkumuliert, sodass fadeIn() den Wert
-			// nicht auf 1 ändern lässt, sondern auf 1*currentAlpha... Total bekloppt.)
-			startFading(hiddenAlpha, hiddenAlpha, 0);
-		}
-	}
-	
-	
-	// ////////////////////////////////////////////////////////////////////////
+
+
+    // ////////////////////////////////////////////////////////////////////////
 	// //////////// OVERLAYICON PROPERTY OVERRIDES
 	// ////////////////////////////////////////////////////////////////////////
 	
 	@Override
 	protected int getImagePositionX() {
-		return refPointPosition.x;
+        return 0;
 	}
 	
 	@Override
 	protected int getImagePositionY() {
-		return refPointPosition.y;
+        return 0;
 	}
 	
 	@Override
@@ -112,36 +77,7 @@ public class ReferencePointIcon extends OverlayIcon {
 				2 * (getHeight() + getImageOffsetY()));
 	}
 	
-	// ////////////////////////////////////////////////////////////////////////
-	// //////////// REFERENCEPOINT PROPERTIES
-	// ////////////////////////////////////////////////////////////////////////
-	
-	/**
-	 * Gibt Bildkoordinaten des Referenzpunkts relativ zum Koordinatenursprung der Karte als Point2D zurück.
-	 */
-	public Point2D getPosition() {
-		return refPointPosition;
-	}
-	
-	/**
-	 * Setze Bildkoordinaten des Referenzpunktes relativ zum Koordinatenursprung der Karte
-	 * 
-	 * @param position neue Position
-	 */
-	public void setPosition(Point2D position) {
-		refPointPosition = position;
-		
-		// Darstellung aktualisieren
-		update();
-	}
-	
-	/**
-	 * Gibt den Zeitpunkt der Erzeugung (Akzeptanz) des Referenzpunkts zurück.
-	 */
-	public long getTimestamp() {
-		return timeStamp;
-	}
-	
+
 	/**
 	 * Setzt den Zeitpunkt der Erzeugung des Referenzpunkts.
 	 */

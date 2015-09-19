@@ -54,16 +54,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.TrackDB;
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.TrackDBEntry;
 import de.hu_berlin.informatik.spws2014.mapever.camera.CornerDetectionCamera;
 import de.hu_berlin.informatik.spws2014.mapever.entzerrung.Entzerren;
 import de.hu_berlin.informatik.spws2014.mapever.navigation.Navigation;
@@ -96,7 +90,6 @@ public class Start extends BaseActivity {
 	}
 	
 	// keeps track of the maps and their respective positions in the grid
-	private Map<Integer, TrackDBEntry> positionIdList = new HashMap<Integer, TrackDBEntry>();
 	private List<Bitmap> bitmapList = new ArrayList<Bitmap>();
 	
 	// track the state of some GUI-elements for orientation changes
@@ -144,31 +137,32 @@ public class Start extends BaseActivity {
 		Resources resources = getResources();
 		
 		// get a list of all maps from the databse
-		if (!TrackDB.loadDB(new File(MapEverApp.getAbsoluteFilePath("")))) {
-			Log.e("Start", "Could not start DB!");
-			System.exit(-1);
-		}
+//		if (!TrackDB.loadDB(new File(MapEverApp.getAbsoluteFilePath("")))) {
+//			Log.e("Start", "Could not start DB!");
+//			System.exit(-1);
+//		}
 		
-		ArrayList<TrackDBEntry> mapList = new ArrayList<TrackDBEntry>(TrackDB.main.getAllMaps());
-		Collections.sort(mapList, new Comparator<TrackDBEntry>() {
-			public int compare(TrackDBEntry t1, TrackDBEntry t2) {
-				if (t1.getIdentifier() > t2.getIdentifier()) return -1;
-				if (t1.getIdentifier() < t2.getIdentifier()) return 1;
-				return 0;
-			}
-		});
+		ArrayList<String> mapList = new ArrayList<>();
+        mapList.add("1");
+//		Collections.sort(mapList, new Comparator<TrackDBEntry>() {
+//			public int compare(TrackDBEntry t1, TrackDBEntry t2) {
+//				if (t1.getIdentifier() > t2.getIdentifier()) return -1;
+//				if (t1.getIdentifier() < t2.getIdentifier()) return 1;
+//				return 0;
+//			}
+//		});
 		
 		// Debug
-		System.out.println("getAllEntries: " + mapList);
+//		System.out.println("getAllEntries: " + mapList);
 		System.out.println("isContextMenuOpen: " + isContextMenuOpen);
 		
 		final GridView gridview = (GridView) findViewById(R.id.start);
 		gridview.setNumColumns(column);
 		gridview.setAdapter(new ImageAdapter(this));
 		
-		if (mapList.isEmpty()) {
-			noMaps = 1;
-		}
+//		if (mapList.isEmpty()) {
+//			noMaps = 1;
+//		}
 		
 		// uses null tiles to enforce the respective orientation layouts
 		if (noMaps == 1) {
@@ -193,36 +187,36 @@ public class Start extends BaseActivity {
 			bitmapList.add(BitmapFactory.decodeResource(resources, R.drawable.neue_karte));
 			
 			int position = 0;
-			for (TrackDBEntry d : mapList) {
+			for (String d : mapList) {
 				position++;
-				positionIdList.put(position, d);
-				
-				// get the ID of the map
-				String id_string = Long.toString(positionIdList.get(position).getIdentifier());
+//				positionIdList.put(position, d);
+//
+//				// get the ID of the map
+				String id_string = d;
 				File thumbFile = new File(MapEverApp.getAbsoluteFilePath(id_string + "_thumb"));
 				Bitmap thumbBitmap = null;
-				
-				// try to load bitmap of thumbnail if it exists
+//
+//				// try to load bitmap of thumbnail if it exists
 				if (thumbFile.exists()) {
 					thumbBitmap = BitmapFactory.decodeFile(thumbFile.getAbsolutePath());
 				}
-				
-				// add the thumbnail of the map to the bitmapList if it exists, a dummy picture otherwise
+//
+//				// add the thumbnail of the map to the bitmapList if it exists, a dummy picture otherwise
 				if (thumbBitmap != null) {
 					bitmapList.add(thumbBitmap);
 				}
 				else {
 					bitmapList.add(BitmapFactory.decodeResource(resources, R.drawable.map_dummy));
 				}
-				
-				// (((Debug
-				System.out.println("mapID: " + d.getIdentifier());
-				System.out.println("ID String:" + MapEverApp.getAbsoluteFilePath(id_string));
-				System.out.println("ID map (position , ID)");
-				for (Map.Entry<Integer, TrackDBEntry> entry : positionIdList.entrySet()) {
-					System.out.println("ID map: " + "(" + entry.getKey() + " , " + entry.getValue() + ")");
-				}
-				// )))Debug
+//
+//				// (((Debug
+//				System.out.println("mapID: " + d.getIdentifier());
+//				System.out.println("ID String:" + MapEverApp.getAbsoluteFilePath(id_string));
+//				System.out.println("ID map (position , ID)");
+//				for (Map.Entry<Integer, TrackDBEntry> entry : positionIdList.entrySet()) {
+//					System.out.println("ID map: " + "(" + entry.getKey() + " , " + entry.getValue() + ")");
+//				}
+//				// )))Debug
 			}
 		}
 		
@@ -257,7 +251,7 @@ public class Start extends BaseActivity {
 				else {
 					// Toast.makeText(Start.this, "" + position, Toast.LENGTH_SHORT).show();
 					Intent intent = new Intent(getApplicationContext(), Navigation.class);
-					intent.putExtra(Navigation.INTENT_LOADMAPID,  positionIdList.get(position).getIdentifier());
+					intent.putExtra(Navigation.INTENT_LOADMAPID,  ""+position);
 					intent.putExtra(Navigation.INTENT_POS, intentPos);
 					startActivityForResult(intent, NAVIGATION_REQUESTCODE);
 				}
@@ -422,7 +416,7 @@ public class Start extends BaseActivity {
 		if (id == R.id.action_load_testmap) {
 			// load test map (ID 0)
 			Intent intent = new Intent(getApplicationContext(), Navigation.class);
-			intent.putExtra(Navigation.INTENT_LOADMAPID, 0L);
+//			intent.putExtra(Navigation.INTENT_LOADMAPID, 0L);
 			startActivityForResult(intent, NAVIGATION_REQUESTCODE);
 			return true;
 		}
@@ -483,7 +477,7 @@ public class Start extends BaseActivity {
 			
 			try {
 				// InputStream für Quelldatei erzeugen
-				Log.d("Neue_Karte/onActivityResult", "Copying file '" + srcUri.toString() + "'");
+//				Log.d("Neue_Karte/onActivityResult", "Copying file '" + srcUri.toString() + "'");
 				InputStream inStream = this.getContentResolver().openInputStream(srcUri);
 				
 				// Zieldatei erstellen
@@ -574,7 +568,7 @@ public class Start extends BaseActivity {
 		int position = info.position;
 		String header = "";
 		if (position != 0 && noMaps == 0) {
-			header = positionIdList.get(position).getMapname();
+//			header = positionIdList.get(position).getMapname();
 			if (header.isEmpty()) {
 				header = getResources().getString(R.string.navigation_const_name_of_unnamed_maps);
 			}
@@ -588,38 +582,29 @@ public class Start extends BaseActivity {
 		}
 	}
 	
-	public void deleteMap(TrackDBEntry map) {
-		TrackDB.main.delete(map);
-		String basefile = MapEverApp.getAbsoluteFilePath(Long.toString(map.getIdentifier())); 
-		new File(basefile).delete();
-		new File(basefile + MapEverApp.THUMB_EXT).delete();
-	}
-	
-	public void renameMap(TrackDBEntry map, String newName) {
-		map.setMapname(newName);
-	}
-	
+
+
 	public boolean onContextItemSelected(MenuItem item) {
 		final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		int position = info.position;
 		String rename = getString(R.string.start_context_rename);
 		String delete = getString(R.string.start_context_delete);
 		
-		String mapName = positionIdList.get(position).getMapname();
-		if (mapName.isEmpty()) {
-			mapName = getResources().getString(R.string.navigation_const_name_of_unnamed_maps);
-		}
+//		String mapName = positionIdList.get(position).getMapname();
+//		if (mapName.isEmpty()) {
+//			mapName = getResources().getString(R.string.navigation_const_name_of_unnamed_maps);
+//		}
 		
 		if (item.getTitle() == rename) {
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
 			alert.setTitle(R.string.navigation_rename_map);
 			final EditText input = new EditText(this);
-			input.setText(mapName);
+//			input.setText(mapName);
 			alert.setView(input);
 			alert.setPositiveButton(R.string.navigation_rename_map_rename, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichButton) {
 					String newName = input.getEditableText().toString();
-					renameMap(positionIdList.get(info.position), newName);
+//					renameMap(positionIdList.get(info.position), newName);
 					showToast(getResources().getString(R.string.start_context_rename_success));
 				}
 			});
@@ -643,7 +628,7 @@ public class Start extends BaseActivity {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					deleteMap(positionIdList.get(info.position));
+//					deleteMap(positionIdList.get(info.position));
 					Intent intent = getIntent();
 					finish();
 					startActivity(intent);

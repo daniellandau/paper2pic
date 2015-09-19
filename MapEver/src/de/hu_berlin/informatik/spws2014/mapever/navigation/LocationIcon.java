@@ -18,7 +18,6 @@ package de.hu_berlin.informatik.spws2014.mapever.navigation;
 
 import android.graphics.Rect;
 
-import de.hu_berlin.informatik.spws2014.ImagePositionLocator.Point2D;
 import de.hu_berlin.informatik.spws2014.mapever.R;
 import de.hu_berlin.informatik.spws2014.mapever.largeimageview.LargeImageView;
 import de.hu_berlin.informatik.spws2014.mapever.largeimageview.OverlayIcon;
@@ -29,7 +28,7 @@ public class LocationIcon extends OverlayIcon {
 	private static int locationImageResource = R.drawable.current_position;
 	
 	// Bildkoordinaten der Benutzerposition
-	private Point2D locationPosition = new Point2D(0, 0);
+//	private Point2D locationPosition = new Point2D(0, 0);
 	
 	
 	// ////////////////////////////////////////////////////////////////////////
@@ -56,12 +55,12 @@ public class LocationIcon extends OverlayIcon {
 	
 	@Override
 	protected int getImagePositionX() {
-		return locationPosition.x;
+        return 0;
 	}
 	
 	@Override
 	protected int getImagePositionY() {
-		return locationPosition.y;
+        return 0;
 	}
 	
 	// ImageOffset: das Icon ist ein Punkt, die Position liegt also exakt in der Mitte des Icons
@@ -81,29 +80,6 @@ public class LocationIcon extends OverlayIcon {
 		// Die LocationView als nicht klickbar markieren (nicht notwendig, aber slightly effizienter).
 		return null;
 	}
-	
-	
-	// ////////////////////////////////////////////////////////////////////////
-	// //////////// REFERENCEPOINT PROPERTIES
-	// ////////////////////////////////////////////////////////////////////////
-	
-	/**
-	 * Gibt Bildkoordinaten der Benutzerposition relativ zum Koordinatenursprung der Karte als Point2D zurück.
-	 */
-	public Point2D getPosition() {
-		return locationPosition;
-	}
-	
-	/**
-	 * Setze Bildkoordinaten der Benutzerposition relativ zum Koordinatenursprung der Karte.
-	 */
-	public void setPosition(Point2D position) {
-		locationPosition = position;
-		
-		// Darstellung aktualisieren
-		update();
-	}
-	
 	
 	// ////////////////////////////////////////////////////////////////////////
 	// //////////// EVENT HANDLERS
