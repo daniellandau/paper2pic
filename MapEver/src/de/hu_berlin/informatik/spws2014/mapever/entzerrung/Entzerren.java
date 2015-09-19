@@ -16,6 +16,7 @@
 
 package de.hu_berlin.informatik.spws2014.mapever.entzerrung;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -229,10 +230,11 @@ public class Entzerren extends BaseActivity {
 			}
 			
 			// Navigation mit Parameter loadmapid = -1 (== neue Karte) aufrufen
-			Intent intent_nav = new Intent(this, Navigation.class);
-			intent_nav.putExtra(Navigation.INTENT_LOADMAPID, -1L);
-			startActivity(intent_nav);
-			finish();
+//			Intent intent_nav = new Intent(this, Navigation.class);
+//			intent_nav.putExtra(Navigation.INTENT_LOADMAPID, -1L);
+//			startActivity(intent_nav);
+            Entzerren.this.setResult(Activity.RESULT_OK);
+            finish();
 		}
 	}
 	

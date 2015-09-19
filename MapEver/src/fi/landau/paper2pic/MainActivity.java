@@ -9,7 +9,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import de.hu_berlin.informatik.spws2014.mapever.FileUtils;
 import de.hu_berlin.informatik.spws2014.mapever.MapEverApp;
 import de.hu_berlin.informatik.spws2014.mapever.R;
 import de.hu_berlin.informatik.spws2014.mapever.Start;
@@ -18,10 +23,12 @@ import de.hu_berlin.informatik.spws2014.mapever.entzerrung.Entzerren;
 import org.opencv.android.OpenCVLoader;
 
 import java.io.File;
+import java.io.IOException;
 
 public class MainActivity extends ActionBarActivity {
     private final String TAG = "paper2pic";
     private final int TAKE_PICTURE_REQUESTCODE = 1;
+    private final int CROP_PICTURE_REQUESTCODE = 2;
 
     static {
         if (!OpenCVLoader.initDebug()) {
@@ -52,7 +59,21 @@ public class MainActivity extends ActionBarActivity {
             Log.d(TAG, "Got back data");
             Intent EntzerrenActivity = new Intent(getApplicationContext(), Entzerren.class);
             EntzerrenActivity.putExtra(Start.INTENT_IMAGEPATH,  "tmp.jpg");
-            startActivity(EntzerrenActivity);
+            startActivityForResult(EntzerrenActivity, CROP_PICTURE_REQUESTCODE);
+        } else if (requestCode == CROP_PICTURE_REQUESTCODE && resultCode == RESULT_OK) {
+            try {
+                FileUtils.copyFileToFile(
+                        new File(MapEverApp.getAbsoluteFilePath("tmp.jpg")),
+                        new File(MapEverApp.getAbsoluteFilePath("result.jpg")));
+                ListView list = (ListView)findViewById(R.id.imageListView);
+                String[] files = { "foo" };
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.listitem, files);
+                list.setAdapter(adapter);
+            } catch (IOException e) {
+                Log.e(TAG, "Couldn't copy to result.jpg");
+            }
+        } else {
+            Log.d(TAG, "request: "+ requestCode + ", result: "+resultCode);
         }
     }
 

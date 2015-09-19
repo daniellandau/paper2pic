@@ -32,4 +32,11 @@
                 android:id="@+id/addFromGallery"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
+    <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageListView"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
 </RelativeLayout>
