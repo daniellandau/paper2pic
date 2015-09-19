@@ -50,7 +50,7 @@ public class Entzerren extends BaseActivity {
 	private static final String IMAGEENTZERRT = "IMAGEENTZERRT";
 	
 	// other constants
-	private static final String INPUTFILENAME = MapEverApp.TEMP_IMAGE_FILENAME;
+	private static final String INPUTFILENAME = "tmp.jpg";//MapEverApp.TEMP_IMAGE_FILENAME;
 	private static final String INPUTFILENAMEBAK = INPUTFILENAME + "_bak";
 	
 	// View references

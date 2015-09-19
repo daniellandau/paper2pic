@@ -26,8 +26,9 @@ android {
             java.srcDirs = ['src']
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
+            jni.srcDirs = [] // This prevents the auto generation of Android.mk
+            jniLibs.srcDir 'libs' // This is not necessary unless you have precompiled libraries in your project.
         }
-
         // Move the tests to tests/java, tests/res, etc...
         instrumentTest.setRoot('tests')
 
