@@ -1,5 +1,6 @@
 package fi.landau.paper2pic;
 
+import android.app.ListActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -24,11 +25,14 @@ import org.opencv.android.OpenCVLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ListActivity {
     private final String TAG = "paper2pic";
     private final int TAKE_PICTURE_REQUESTCODE = 1;
     private final int CROP_PICTURE_REQUESTCODE = 2;
+
+    private ArrayList<String> fakeDb;
 
     static {
         if (!OpenCVLoader.initDebug()) {
@@ -40,6 +44,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fakeDb = new ArrayList<>();
         FloatingActionButton fromCameraButton = (FloatingActionButton) findViewById(R.id.addFromCamera);
         fromCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,18 +67,19 @@ public class MainActivity extends ActionBarActivity {
             startActivityForResult(EntzerrenActivity, CROP_PICTURE_REQUESTCODE);
         } else if (requestCode == CROP_PICTURE_REQUESTCODE && resultCode == RESULT_OK) {
             try {
+                String savedFile = fakeDb.size() + ".jpg";
+                fakeDb.add(savedFile);
                 FileUtils.copyFileToFile(
                         new File(MapEverApp.getAbsoluteFilePath("tmp.jpg")),
-                        new File(MapEverApp.getAbsoluteFilePath("result.jpg")));
-                ListView list = (ListView)findViewById(R.id.imageListView);
-                String[] files = { "foo" };
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.listitem, files);
+                        new File(MapEverApp.getAbsoluteFilePath(savedFile)));
+                ListView list = (ListView)findViewById(android.R.id.list);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.listitem, fakeDb);
                 list.setAdapter(adapter);
             } catch (IOException e) {
                 Log.e(TAG, "Couldn't copy to result.jpg");
             }
         } else {
-            Log.d(TAG, "request: "+ requestCode + ", result: "+resultCode);
+            Log.d(TAG, "request: " + requestCode + ", result: " + resultCode);
         }
     }
 
@@ -99,4 +105,15 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        File destFile = new File(MapEverApp.getAbsoluteFilePath(fakeDb.get(position)));
+        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(destFile));
+        shareIntent.setType("image/jpeg");
+        startActivity(Intent.createChooser(shareIntent, "Send the file"));
+    }
+
 }
