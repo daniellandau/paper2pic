@@ -41,8 +41,7 @@ public class MapEverApp extends Application {
 	public static final String BASE_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + BASE_DIR_DIRNAME;
 	
 	public static final String TEMP_IMAGE_FILENAME = "temp";
-	public static final String THUMB_EXT = "_thumb";
-	
+
 	public MapEverApp() {
 		// ////// INITIALIZE APP
 		

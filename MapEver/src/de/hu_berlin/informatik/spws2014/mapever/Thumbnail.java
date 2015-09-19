@@ -53,11 +53,6 @@ public class Thumbnail
 		thumb.compress(Bitmap.CompressFormat.PNG,100,fos);
 		fos.close();
 	}
-	
-	public static void generate(String input_filename, int thumb_width, int thumb_height) throws java.io.IOException
-	{
-		generate(input_filename,get_thumbnail_filename(input_filename),thumb_width,thumb_height);
-	}
 
 	private static int get_best_sample_size(String filename, int thumb_width, int thumb_height)
 	{
@@ -79,17 +74,4 @@ public class Thumbnail
 		
 		return current_sample_size/2; //last size producing a image >= the desired
 	}
-	
-	private static String get_thumbnail_filename(String original_filename)
-	{
-		return strip_extension(original_filename)+"_thumb.png";
-	}
-	
-	private static String strip_extension(String filename)
-	{
-		return filename.lastIndexOf(".")==-1?
-			filename:
-			filename.substring(0, filename.lastIndexOf("."));
-	}
-	
 }

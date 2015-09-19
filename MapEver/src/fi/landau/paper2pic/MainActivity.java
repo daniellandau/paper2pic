@@ -15,10 +15,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import de.hu_berlin.informatik.spws2014.mapever.FileUtils;
-import de.hu_berlin.informatik.spws2014.mapever.MapEverApp;
-import de.hu_berlin.informatik.spws2014.mapever.R;
-import de.hu_berlin.informatik.spws2014.mapever.Start;
+import de.hu_berlin.informatik.spws2014.mapever.*;
 import de.hu_berlin.informatik.spws2014.mapever.camera.CornerDetectionCamera;
 import de.hu_berlin.informatik.spws2014.mapever.entzerrung.Entzerren;
 import org.opencv.android.OpenCVLoader;
@@ -32,7 +29,7 @@ public class MainActivity extends ListActivity {
     private final int TAKE_PICTURE_REQUESTCODE = 1;
     private final int CROP_PICTURE_REQUESTCODE = 2;
 
-    private ArrayList<String> fakeDb;
+    private ArrayList<ScannedItem> fakeDb;
 
     static {
         if (!OpenCVLoader.initDebug()) {
@@ -45,6 +42,19 @@ public class MainActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fakeDb = new ArrayList<>();
+        String relativeFilename = fakeDb.size() + ".jpg";
+        String savedFileName = MapEverApp.getAbsoluteFilePath(relativeFilename);
+        String relativeThumbFileName = "thumb_" + relativeFilename;
+        String thumbFileName = MapEverApp.getAbsoluteFilePath(relativeThumbFileName);
+        File savedFile = new File(savedFileName);
+        fakeDb.add(new ScannedItem(savedFile, new File(thumbFileName), savedFileName));
+        relativeFilename = fakeDb.size() + ".jpg";
+        savedFileName = MapEverApp.getAbsoluteFilePath(relativeFilename);
+        relativeThumbFileName = "thumb_" + relativeFilename;
+        thumbFileName = MapEverApp.getAbsoluteFilePath(relativeThumbFileName);
+        savedFile = new File(savedFileName);
+        fakeDb.add(new ScannedItem(savedFile, new File(thumbFileName), savedFileName));
+        setAdapter();
         FloatingActionButton fromCameraButton = (FloatingActionButton) findViewById(R.id.addFromCamera);
         fromCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,24 +77,33 @@ public class MainActivity extends ListActivity {
             startActivityForResult(EntzerrenActivity, CROP_PICTURE_REQUESTCODE);
         } else if (requestCode == CROP_PICTURE_REQUESTCODE && resultCode == RESULT_OK) {
             try {
-                String savedFile = fakeDb.size() + ".jpg";
-                fakeDb.add(savedFile);
+                String relativeFilename = fakeDb.size() + ".jpg";
+                String savedFileName = MapEverApp.getAbsoluteFilePath(relativeFilename);
+                String relativeThumbFileName = "thumb_" + relativeFilename;
+                String thumbFileName = MapEverApp.getAbsoluteFilePath(relativeThumbFileName);
+                File savedFile = new File(savedFileName);
                 FileUtils.copyFileToFile(
                         new File(MapEverApp.getAbsoluteFilePath("tmp.jpg")),
-                        new File(MapEverApp.getAbsoluteFilePath(savedFile)));
-                ListView list = (ListView)findViewById(android.R.id.list);
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.listitem, fakeDb);
-                list.setAdapter(adapter);
+                        savedFile);
+                Thumbnail.generate(savedFileName, thumbFileName, 512, 512);
+                fakeDb.add(new ScannedItem(savedFile, new File(thumbFileName), savedFileName));
+                setAdapter();
             } catch (IOException e) {
-                Log.e(TAG, "Couldn't copy to result.jpg");
+                Log.e(TAG, "Some error saving image or generating thumbnail");
             }
         } else {
             Log.d(TAG, "request: " + requestCode + ", result: " + resultCode);
         }
     }
 
+    private void setAdapter() {
+        ListView list = (ListView)findViewById(android.R.id.list);
+        ListItemAdapter adapter = new ListItemAdapter(this, R.layout.listitem, fakeDb);
+        list.setAdapter(adapter);
+    }
 
-        @Override
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -110,7 +129,7 @@ public class MainActivity extends ListActivity {
     public void onListItemClick(ListView l, View v, int position, long id) {
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
-        File destFile = new File(MapEverApp.getAbsoluteFilePath(fakeDb.get(position)));
+        File destFile = fakeDb.get(position).full;
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(destFile));
         shareIntent.setType("image/jpeg");
         startActivity(Intent.createChooser(shareIntent, "Send the file"));

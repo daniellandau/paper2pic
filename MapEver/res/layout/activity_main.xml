@@ -4,10 +4,7 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
                 android:paddingTop="16dp"
-                android:paddingBottom="16dp"
                 tools:context="fi.landau.paper2pic.MainActivity">
     <com.getbase.floatingactionbutton.FloatingActionsMenu
             android:layout_width="wrap_content"
@@ -15,6 +12,8 @@
             fab:fab_plusIconColor="#fafafa"
             fab:fab_colorNormal="#805677fc"
             fab:fab_colorPressed="#80738ffe"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="16dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true">
