@@ -48,7 +48,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == TAKE_PICTURE_REQUESTCODE) {
+        if (requestCode == TAKE_PICTURE_REQUESTCODE && resultCode == RESULT_OK) {
             Log.d(TAG, "Got back data");
             Intent EntzerrenActivity = new Intent(getApplicationContext(), Entzerren.class);
             EntzerrenActivity.putExtra(Start.INTENT_IMAGEPATH,  "tmp.jpg");
