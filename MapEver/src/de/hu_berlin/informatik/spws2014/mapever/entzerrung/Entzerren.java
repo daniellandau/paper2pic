@@ -37,10 +37,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import de.hu_berlin.informatik.spws2014.mapever.BaseActivity;
-import de.hu_berlin.informatik.spws2014.mapever.FileUtils;
-import de.hu_berlin.informatik.spws2014.mapever.MapEverApp;
-import de.hu_berlin.informatik.spws2014.mapever.R;
+import de.hu_berlin.informatik.spws2014.mapever.*;
 import de.hu_berlin.informatik.spws2014.mapever.navigation.Navigation;
 
 public class Entzerren extends BaseActivity {
@@ -50,8 +47,8 @@ public class Entzerren extends BaseActivity {
 	private static final String IMAGEENTZERRT = "IMAGEENTZERRT";
 	
 	// other constants
-	private static final String INPUTFILENAME = "tmp.jpg";//MapEverApp.TEMP_IMAGE_FILENAME;
-	private static final String INPUTFILENAMEBAK = INPUTFILENAME + "_bak";
+	private String inputFileName;
+	private String INPUTFILENAMEBAK = inputFileName + "_bak";
 	
 	// View references
 	private EntzerrungsView entzerrungsView;
@@ -66,6 +63,7 @@ public class Entzerren extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        inputFileName = getIntent().getStringExtra(Start.INTENT_IMAGEPATH);
 		setContentView(R.layout.activity_entzerren);
 		
 		// Layout aufbauen
@@ -82,7 +80,7 @@ public class Entzerren extends BaseActivity {
 		// Wird die Activity frisch neu erstellt oder haben wir einen gespeicherten Zustand?
 		if (savedInstanceState == null) {
 			// Verwende statischen Dateinamen als Eingabe
-			File imageFile = new File(MapEverApp.getAbsoluteFilePath(INPUTFILENAME));
+			File imageFile = new File(MapEverApp.getAbsoluteFilePath(inputFileName));
 			File imageFile_bak = new File(MapEverApp.getAbsoluteFilePath(INPUTFILENAMEBAK));
 			
 			// Backup von der Datei erstellen, um ein Rückgängigmachen zu ermöglichen
@@ -172,7 +170,7 @@ public class Entzerren extends BaseActivity {
 		if (entzerrt) {
 			// ersetze das Bild mit dem Backup
 			File imageFile_bak = new File(MapEverApp.getAbsoluteFilePath(INPUTFILENAMEBAK));
-			File imageFile = new File(MapEverApp.getAbsoluteFilePath(INPUTFILENAME));
+			File imageFile = new File(MapEverApp.getAbsoluteFilePath(inputFileName));
 			
 			copy(imageFile_bak, imageFile);
 			
@@ -337,7 +335,7 @@ public class Entzerren extends BaseActivity {
 	
 	public void loadImageFile() {
 		// Verwende statischen Dateinamen als Eingabe
-		File imageFile = new File(MapEverApp.getAbsoluteFilePath(INPUTFILENAME));
+		File imageFile = new File(MapEverApp.getAbsoluteFilePath(inputFileName));
 		
 		try {
 			// Bild in die View laden
@@ -436,7 +434,7 @@ public class Entzerren extends BaseActivity {
 				}
 				else {
 					// entzerrtes Bild abspeichern
-					saveBitmap(entzerrtesBitmap, Entzerren.INPUTFILENAME);
+					saveBitmap(entzerrtesBitmap, inputFileName);
 				}
 			}
 			catch (OutOfMemoryError e) {
