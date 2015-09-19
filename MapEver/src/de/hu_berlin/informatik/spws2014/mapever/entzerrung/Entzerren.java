@@ -48,7 +48,7 @@ public class Entzerren extends BaseActivity {
 	
 	// other constants
 	private String inputFileName;
-	private String INPUTFILENAMEBAK = inputFileName + "_bak";
+	private String backupName() { return inputFileName + "_bak";}
 	
 	// View references
 	private EntzerrungsView entzerrungsView;
@@ -81,7 +81,7 @@ public class Entzerren extends BaseActivity {
 		if (savedInstanceState == null) {
 			// Verwende statischen Dateinamen als Eingabe
 			File imageFile = new File(MapEverApp.getAbsoluteFilePath(inputFileName));
-			File imageFile_bak = new File(MapEverApp.getAbsoluteFilePath(INPUTFILENAMEBAK));
+			File imageFile_bak = new File(MapEverApp.getAbsoluteFilePath(backupName()));
 			
 			// Backup von der Datei erstellen, um ein Rückgängigmachen zu ermöglichen
 			copy(imageFile, imageFile_bak);
@@ -169,7 +169,7 @@ public class Entzerren extends BaseActivity {
 		
 		if (entzerrt) {
 			// ersetze das Bild mit dem Backup
-			File imageFile_bak = new File(MapEverApp.getAbsoluteFilePath(INPUTFILENAMEBAK));
+			File imageFile_bak = new File(MapEverApp.getAbsoluteFilePath(backupName()));
 			File imageFile = new File(MapEverApp.getAbsoluteFilePath(inputFileName));
 			
 			copy(imageFile_bak, imageFile);
@@ -222,7 +222,7 @@ public class Entzerren extends BaseActivity {
 		}
 		else {
 			// temp_bak löschen
-			File imageFile_bak = new File(MapEverApp.getAbsoluteFilePath(INPUTFILENAMEBAK));
+			File imageFile_bak = new File(MapEverApp.getAbsoluteFilePath(backupName()));
 			if (imageFile_bak.exists()) {
 				imageFile_bak.delete();
 			}
