@@ -42,18 +42,14 @@ public class MainActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fakeDb = new ArrayList<>();
-        String relativeFilename = fakeDb.size() + ".jpg";
-        String savedFileName = MapEverApp.getAbsoluteFilePath(relativeFilename);
-        String relativeThumbFileName = "thumb_" + relativeFilename;
-        String thumbFileName = MapEverApp.getAbsoluteFilePath(relativeThumbFileName);
-        File savedFile = new File(savedFileName);
-        fakeDb.add(new ScannedItem(savedFile, new File(thumbFileName), savedFileName));
-        relativeFilename = fakeDb.size() + ".jpg";
-        savedFileName = MapEverApp.getAbsoluteFilePath(relativeFilename);
-        relativeThumbFileName = "thumb_" + relativeFilename;
-        thumbFileName = MapEverApp.getAbsoluteFilePath(relativeThumbFileName);
-        savedFile = new File(savedFileName);
-        fakeDb.add(new ScannedItem(savedFile, new File(thumbFileName), savedFileName));
+        for (int i = 0; i < 5; ++i) {
+            String relativeFilename = fakeDb.size() + ".jpg";
+            String savedFileName = MapEverApp.getAbsoluteFilePath(relativeFilename);
+            String relativeThumbFileName = "thumb_" + relativeFilename;
+            String thumbFileName = MapEverApp.getAbsoluteFilePath(relativeThumbFileName);
+            File savedFile = new File(savedFileName);
+            fakeDb.add(new ScannedItem(savedFile, new File(thumbFileName), savedFileName));
+        }
         setAdapter();
         FloatingActionButton fromCameraButton = (FloatingActionButton) findViewById(R.id.addFromCamera);
         fromCameraButton.setOnClickListener(new View.OnClickListener() {
