@@ -40,6 +40,7 @@ import java.io.IOException;
 
 import de.hu_berlin.informatik.spws2014.mapever.*;
 import de.hu_berlin.informatik.spws2014.mapever.navigation.Navigation;
+import fi.landau.paper2pic.R;
 
 // https://de.wikipedia.org/wiki/Entzerrung_%28Fotografie%29
 public class Entzerren extends BaseActivity {

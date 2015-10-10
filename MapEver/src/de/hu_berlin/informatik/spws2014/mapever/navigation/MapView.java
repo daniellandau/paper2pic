@@ -31,7 +31,7 @@ import java.io.FileNotFoundException;
 import java.util.HashSet;
 
 import de.hu_berlin.informatik.spws2014.mapever.MapEverApp;
-import de.hu_berlin.informatik.spws2014.mapever.R;
+import fi.landau.paper2pic.R;
 import de.hu_berlin.informatik.spws2014.mapever.largeimageview.LargeImageView;
 
 public class MapView extends LargeImageView {

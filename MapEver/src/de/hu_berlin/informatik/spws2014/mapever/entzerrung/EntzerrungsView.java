@@ -47,7 +47,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import de.hu_berlin.informatik.spws2014.mapever.R;
+import fi.landau.paper2pic.R;
 import de.hu_berlin.informatik.spws2014.mapever.largeimageview.LargeImageView;
 
 public class EntzerrungsView extends LargeImageView {

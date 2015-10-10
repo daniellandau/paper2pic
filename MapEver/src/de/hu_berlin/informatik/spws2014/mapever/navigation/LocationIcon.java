@@ -18,7 +18,7 @@ package de.hu_berlin.informatik.spws2014.mapever.navigation;
 
 import android.graphics.Rect;
 
-import de.hu_berlin.informatik.spws2014.mapever.R;
+import fi.landau.paper2pic.R;
 import de.hu_berlin.informatik.spws2014.mapever.largeimageview.LargeImageView;
 import de.hu_berlin.informatik.spws2014.mapever.largeimageview.OverlayIcon;
 

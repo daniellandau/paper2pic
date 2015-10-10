@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import fi.landau.paper2pic.R;
 
 public class Settings extends PreferenceActivity {
 	

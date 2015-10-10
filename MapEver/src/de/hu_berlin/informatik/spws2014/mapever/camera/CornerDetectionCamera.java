@@ -40,7 +40,7 @@ import org.opencv.core.Scalar;
 
 import java.util.List;
 
-import de.hu_berlin.informatik.spws2014.mapever.R;
+import fi.landau.paper2pic.R;
 import de.hu_berlin.informatik.spws2014.mapever.entzerrung.CornerDetector;
 
 @SuppressWarnings("deprecation")

@@ -27,7 +27,7 @@ import android.widget.ImageView;
 
 import java.io.File;
 
-import de.hu_berlin.informatik.spws2014.mapever.R;
+import fi.landau.paper2pic.R;
 
 public class ConfirmImageActivity extends Activity
 {

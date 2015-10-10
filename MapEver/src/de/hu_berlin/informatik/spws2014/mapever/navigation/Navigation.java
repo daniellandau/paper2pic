@@ -45,7 +45,7 @@ import java.util.Random;
 
 import de.hu_berlin.informatik.spws2014.mapever.BaseActivity;
 import de.hu_berlin.informatik.spws2014.mapever.MapEverApp;
-import de.hu_berlin.informatik.spws2014.mapever.R;
+import fi.landau.paper2pic.R;
 import de.hu_berlin.informatik.spws2014.mapever.Start;
 
 public class Navigation extends BaseActivity implements LocationListener {

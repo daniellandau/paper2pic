@@ -24,6 +24,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import fi.landau.paper2pic.R;
 
 public class BaseActivity extends ActionBarActivity {
 	// ÜberUns popup
