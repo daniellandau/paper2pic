@@ -57,48 +57,48 @@
             <!--</intent-filter>-->
         <!--</activity>-->
         <activity
-            android:name=".camera.CornerDetectionCamera"
+            android:name="de.hu_berlin.informatik.spws2014.mapever.camera.CornerDetectionCamera"
             android:label="@string/app_name"
-            android:parentActivityName=".Start"
+            android:parentActivityName="de.hu_berlin.informatik.spws2014.mapever.Start"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Start" />
+                android:value="de.hu_berlin.informatik.spws2014.mapever.Start" />
         </activity>
         <activity
-            android:name=".camera.ConfirmImageActivity"
+            android:name="de.hu_berlin.informatik.spws2014.mapever.camera.ConfirmImageActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".camera.CornerDetectionCamera" >
+            android:parentActivityName="de.hu_berlin.informatik.spws2014.mapever.camera.CornerDetectionCamera" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".camera.CornerDetectionCamera" />
+                android:value="de.hu_berlin.informatik.spws2014.mapever.camera.CornerDetectionCamera" />
         </activity>
         <activity
-            android:name=".entzerrung.Entzerren"
+            android:name="de.hu_berlin.informatik.spws2014.mapever.entzerrung.Entzerren"
             android:label="@string/title_activity_deskew"
-            android:parentActivityName=".Start" >
+            android:parentActivityName="de.hu_berlin.informatik.spws2014.mapever.Start" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Start" />
+                android:value="de.hu_berlin.informatik.spws2014.mapever.Start" />
         </activity>
         <activity
-            android:name=".navigation.Navigation"
+            android:name="de.hu_berlin.informatik.spws2014.mapever.navigation.Navigation"
             android:label="@string/title_activity_navigation"
-            android:parentActivityName=".Start" >
+            android:parentActivityName="de.hu_berlin.informatik.spws2014.mapever.Start" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Start" />
+                android:value="de.hu_berlin.informatik.spws2014.mapever.Start" />
         </activity>
         <activity
-            android:name=".Settings"
+            android:name="de.hu_berlin.informatik.spws2014.mapever.Settings"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".Start" >
+            android:parentActivityName="de.hu_berlin.informatik.spws2014.mapever.Start" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Start" />
+                android:value="de.hu_berlin.informatik.spws2014.mapever.Start" />
         </activity>
         <activity
-            android:name="fi.landau.paper2pic.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

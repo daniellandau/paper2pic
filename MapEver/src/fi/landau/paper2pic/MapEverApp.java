@@ -14,12 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package de.hu_berlin.informatik.spws2014.mapever;
+package fi.landau.paper2pic;
 
 import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
+import de.hu_berlin.informatik.spws2014.mapever.Settings;
 
 import java.io.File;
 import java.io.IOException;

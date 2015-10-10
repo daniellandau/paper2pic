@@ -48,6 +48,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import fi.landau.paper2pic.MapEverApp;
 import fi.landau.paper2pic.R;
 import org.opencv.android.OpenCVLoader;
 

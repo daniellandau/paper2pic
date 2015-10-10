@@ -22,7 +22,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -36,15 +35,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Random;
 
 import de.hu_berlin.informatik.spws2014.mapever.BaseActivity;
-import de.hu_berlin.informatik.spws2014.mapever.MapEverApp;
+import fi.landau.paper2pic.MapEverApp;
 import fi.landau.paper2pic.R;
 import de.hu_berlin.informatik.spws2014.mapever.Start;
 

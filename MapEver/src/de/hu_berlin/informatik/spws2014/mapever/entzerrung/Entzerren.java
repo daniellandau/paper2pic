@@ -18,7 +18,6 @@ package de.hu_berlin.informatik.spws2014.mapever.entzerrung;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -39,7 +38,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import de.hu_berlin.informatik.spws2014.mapever.*;
-import de.hu_berlin.informatik.spws2014.mapever.navigation.Navigation;
+import fi.landau.paper2pic.MapEverApp;
 import fi.landau.paper2pic.R;
 
 // https://de.wikipedia.org/wiki/Entzerrung_%28Fotografie%29

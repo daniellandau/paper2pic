@@ -30,7 +30,7 @@ import android.widget.Toast;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 
-import de.hu_berlin.informatik.spws2014.mapever.MapEverApp;
+import fi.landau.paper2pic.MapEverApp;
 import fi.landau.paper2pic.R;
 import de.hu_berlin.informatik.spws2014.mapever.largeimageview.LargeImageView;
 
